@@ -50,6 +50,54 @@
       ]
     },
     {
+      "id": "cve-2026-16517-trixie",
+      "kind": "security",
+      "file": "CVE-2026-16517.patch",
+      "sha256": "77711b224330d6491831497136f627dcf3871de72f93e2e7e550d57553fbfc5c",
+      "title": "Avoid signed overflow in encrypted ZIP size calculations",
+      "description": "Avoid adding encryption overhead before the Zip64 size comparison, and reject encrypted stored sizes that cannot safely include their overhead.",
+      "cves": [
+        "CVE-2026-16517"
+      ],
+      "upstream": {
+        "repository": "https://github.com/libarchive/libarchive",
+        "commit": "1c6e7b491f60fce335c20a9692f870d1f1ca39aa",
+        "url": "https://github.com/libarchive/libarchive/commit/1c6e7b491f60fce335c20a9692f870d1f1ca39aa"
+      },
+      "appliesTo": [
+        {
+          "target": "debian-trixie-amd64",
+          "sourceVersion": "3.7.4-4+deb13u1"
+        }
+      ],
+      "dep3": {
+        "origin": "Trixie-compatible backport of the upstream encrypted ZIP size overflow fix; uses a direct INT64_MAX guard because this source version does not contain archive_ckd_add_i64.",
+        "forwarded": "not-needed",
+        "lastUpdate": "2026-11-04"
+      },
+      "referenceFiles": [
+        {
+          "path": "tests/fixtures/zip-encrypted-size-overflow.c",
+          "sha256": "d8732f4473675adc36e4041b6edf5d144cc2cbf8f703e9c7a17ab90ac70230de",
+          "purpose": "Installed-package regression that exercises AES-256 ZIP header generation with an INT64_MAX-sized entry."
+        }
+      ],
+      "tests": [
+        {
+          "id": "zip-encrypted-size-overflow",
+          "runner": "getpatched/platform:verification/regression.py",
+          "fixtures": [
+            {
+              "path": "tests/fixtures/zip-encrypted-size-overflow.c",
+              "sha256": "d8732f4473675adc36e4041b6edf5d144cc2cbf8f703e9c7a17ab90ac70230de"
+            }
+          ],
+          "baselineExpectation": "The exact installed Trixie libarchive times out during AES-256 ZIP header generation for an INT64_MAX-sized entry.",
+          "patchedExpectation": "The installed backport completes the header operation within the five-second bound."
+        }
+      ]
+    },
+    {
       "id": "zstd-test-size-tolerance",
       "kind": "build-compatibility",
       "file": "zstd-test-two-byte-tolerance.patch",
