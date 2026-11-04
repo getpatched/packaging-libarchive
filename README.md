@@ -7,9 +7,9 @@ GetPatched maintains selected, tested security backports for package versions wh
 | Target ID | Distribution and pinned source | Candidate version | Binaries | State |
 |---|---|---|---|---|
 | `ubuntu-focal-amd64` | Ubuntu 20.04 LTS, public updates; `3.4.0-2ubuntu1.5` | `3.4.0-2ubuntu1.5+getpatched1` | `libarchive13`, `libarchive-tools` | Development candidate; release checks passed previously, no production package is published |
-| `debian-trixie-amd64` | Debian 13; `3.7.4-4+deb13u1` | `3.7.4-4+deb13u1+getpatched1` | `libarchive13t64`, `libarchive-tools` | Development candidate; CVE-2026-16517 package verification is pending, not a release claim |
+| `debian-trixie-amd64` | Debian 13; `3.7.4-4+deb13u1` | `3.7.4-4+deb13u1+getpatched1` | `libarchive13t64`, `libarchive-tools` | Development candidate; hosted package verification is pending, not a release claim |
 
-Both targets are public immediately after their own release checks; neither has a sponsor delay. The Trixie target is not release-ready until the exact installed baseline regression, patched regression, package tests, scans, consumer checks, and signed APT client checks pass.
+Both targets are public immediately after their own release checks; neither has a sponsor delay. The Trixie target is not release-ready until an exact-source UBSan check reproduces the baseline overflow and passes after the backport, installed-package regressions, package tests, scans, consumer checks, and signed APT client checks pass.
 
 ## Recipe structure and target support
 
@@ -25,7 +25,7 @@ patches/metadata.json records each patch's purpose, checksum, upstream provenanc
 
 The output version retains the full distro source version and adds `+getpatched1`. A new patch release from the same base advances the serial (`+getpatched2`); a changed distro source version gets its own reviewed target pin and release policy.
 
-`CVE-2026-4111.patch` backports libarchive's RAR5 filter-block bound check for Ubuntu Focal. Its encoded fixture must time out against the vulnerable baseline and be rejected promptly by the installed patched package; a normal `bsdtar` create/extract consumer check follows. `CVE-2026-16517.patch` is scoped only to Debian Trixie source `3.7.4-4+deb13u1`; it avoids signed overflow in encrypted ZIP size checks. Its installed regression uses an AES-256 entry of size `INT64_MAX` and requires the baseline to hit the bounded timeout while the patched package completes header generation. This Trixie regression and package build are not yet verified. `zstd-test-two-byte-tolerance.patch` is a separate test-only compatibility adjustment for the pinned Focal source; it changes no runtime package code and claims no CVE.
+`CVE-2026-4111.patch` backports libarchive's RAR5 filter-block bound check for Ubuntu Focal. Its encoded fixture must time out against the vulnerable baseline and be rejected promptly by the installed patched package; a normal `bsdtar` create/extract consumer check follows. `CVE-2026-16517.patch` is scoped only to Debian Trixie source `3.7.4-4+deb13u1`; it avoids signed overflow in encrypted ZIP size checks. An exact-source UBSan build must reproduce `INT64_MAX + 28` before the patch and complete without the overflow after it. The installed baseline and patched packages must both generate the AES-256 ZIP header cleanly, followed by `bsdtar` consumer checks. Hosted Trixie package verification is pending. `zstd-test-two-byte-tolerance.patch` is a separate test-only compatibility adjustment for the pinned Focal source; it changes no runtime package code and claims no CVE.
 
 ## Sponsorship and licensing
 

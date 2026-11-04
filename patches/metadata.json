@@ -79,7 +79,7 @@
         {
           "path": "tests/fixtures/zip-encrypted-size-overflow.c",
           "sha256": "d8732f4473675adc36e4041b6edf5d144cc2cbf8f703e9c7a17ab90ac70230de",
-          "purpose": "Installed-package regression that exercises AES-256 ZIP header generation with an INT64_MAX-sized entry."
+          "purpose": "Installed-package ZIP header compatibility check; exact-source UBSan checks use the same AES-256 INT64_MAX fixture to prove the baseline overflow and patched behavior."
         }
       ],
       "tests": [
@@ -92,8 +92,8 @@
               "sha256": "d8732f4473675adc36e4041b6edf5d144cc2cbf8f703e9c7a17ab90ac70230de"
             }
           ],
-          "baselineExpectation": "The exact installed Trixie libarchive times out during AES-256 ZIP header generation for an INT64_MAX-sized entry.",
-          "patchedExpectation": "The installed backport completes the header operation within the five-second bound."
+          "baselineExpectation": "The exact Debian source build reports signed overflow for INT64_MAX + 28 under UBSan; the installed Trixie library completes the header operation within the five-second bound.",
+          "patchedExpectation": "The patched exact-source UBSan build completes without signed overflow, and the installed backport completes the header operation within the five-second bound."
         }
       ]
     },
