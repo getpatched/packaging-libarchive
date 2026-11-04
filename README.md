@@ -2,23 +2,20 @@
 
 GetPatched maintains selected, tested security backports for package versions whose normal public support has ended. This repository contains the recipe and evidence inputs; it does not vendor a duplicate upstream source tree.
 
-## Current target
+## Targets
 
-| Field | Value |
-|---|---|
-| Target ID | ubuntu-focal-amd64 |
-| Distribution | Ubuntu 20.04 LTS (focal), public updates source |
-| Source package and pinned version | libarchive · 3.4.0-2ubuntu1.5 |
-| GetPatched version | 3.4.0-2ubuntu1.5+getpatched1 |
-| Runtime packages | libarchive13, libarchive-tools |
-| Access | Public after release checks; no sponsor delay |
-| Release state | Development candidate; no production package is published |
+| Target ID | Distribution and pinned source | Candidate version | Binaries | State |
+|---|---|---|---|---|
+| `ubuntu-focal-amd64` | Ubuntu 20.04 LTS, public updates; `3.4.0-2ubuntu1.5` | `3.4.0-2ubuntu1.5+getpatched1` | `libarchive13`, `libarchive-tools` | Development candidate; release checks passed previously, no production package is published |
+| `debian-trixie-amd64` | Debian 13; `3.7.4-4+deb13u1` | `3.7.4-4+deb13u1+getpatched1` | `libarchive13t64`, `libarchive-tools` | Development verification passed; production release remains pending |
+
+Both targets are public immediately after their own release checks; neither has a sponsor delay. The Trixie target is not release-ready until an exact-source UBSan check reproduces the baseline overflow and passes after the backport, installed-package regressions, package tests, scans, consumer checks, and signed APT client checks pass.
 
 ## Recipe structure and target support
 
-package-manifest.json is the package index. It points to targets/ubuntu/focal-amd64.json, which holds this target's exact base, source publication, pinned .dsc and source archives, supported source versions, package version, binary names, patch IDs, and changelog entry. The platform repository's packages.json separately pins the target's build image, snapshot repositories, runner, scan ecosystem, release policy, and whether repository publication is supported.
+package-manifest.json is the package index. It points to one target file per distro, release, and architecture. Each target file holds its exact base, source publication, pinned .dsc and source archives, supported source versions, package version, binary names, patch IDs, and changelog entry. The platform repository's packages.json separately pins the target's build image, snapshot repositories, runner, scan ecosystem, release policy, and whether repository publication is supported.
 
-A target ID names a distribution, release codename, and architecture, such as ubuntu-focal-amd64 or debian-bookworm-arm64. Add another target as a separate file under targets/<distribution>/<codename>-<architecture>.json, then add its independent platform profile and package policy. Do not claim support or enable publication until that exact combination passes a clean build, installed regressions, vulnerability scans, and an APT client test. This pilot currently supports and can publish only Ubuntu Focal amd64. Debian, other Ubuntu releases, and arm64 are not yet claimed.
+A target ID names a distribution, release codename, and architecture, such as `ubuntu-focal-amd64` or `debian-trixie-amd64`. The package manifest and platform policy keep each target's source pins, patches, binary names, and test evidence independent. Do not claim support or enable publication until that exact combination passes a clean build, installed regressions, vulnerability scans, and an APT client test. This repository has no arm64 target.
 
 The fetched source is the distribution's complete source package, including distro-specific packaging and existing patches. An upstream Git submodule alone would omit that state. Source files are pinned by URL, size, and SHA-256. The source descriptor and detached upstream archive signature have not been cryptographically verified; the recipe records that limitation.
 
@@ -26,9 +23,9 @@ The fetched source is the distribution's complete source package, including dist
 
 patches/metadata.json records each patch's purpose, checksum, upstream provenance, CVEs, regression tests, and appliesTo targets. An applicability entry may pin one exact source version or express inclusive/exclusive Debian-version bounds. The target's supportedSourceVersions remains an explicit allowlist: a version inside a patch range is not enough to build unless the target lists it and the build and regressions pass. Current patches are pinned to the exact version above.
 
-The output version retains the full Ubuntu source version and adds +getpatched1. A new patch release from the same base advances the serial (+getpatched2); a changed distro source version gets its own reviewed target pin and release policy.
+The output version retains the full distro source version and adds `+getpatched1`. A new patch release from the same base advances the serial (`+getpatched2`); a changed distro source version gets its own reviewed target pin and release policy.
 
-CVE-2026-4111.patch backports libarchive's RAR5 filter-block bound check from upstream commit ec19fcbd (https://github.com/libarchive/libarchive/commit/ec19fcbd20b18bd3b0fdcf2b3fb97789cd1bf575). The encoded regression fixture must time out against the vulnerable baseline and be rejected promptly by the installed patched package; a normal bsdtar create/extract consumer check follows. zstd-test-two-byte-tolerance.patch is a separate test-only compatibility adjustment for the pinned Focal source; it changes no runtime package code and claims no CVE.
+`CVE-2026-4111.patch` backports libarchive's RAR5 filter-block bound check for Ubuntu Focal. Its encoded fixture must time out against the vulnerable baseline and be rejected promptly by the installed patched package; a normal `bsdtar` create/extract consumer check follows. `CVE-2026-16517.patch` is scoped only to Debian Trixie source `3.7.4-4+deb13u1`; it avoids signed overflow in encrypted ZIP size checks. Hosted run [41756486947](https://github.com/getpatched/platform/actions/runs/41756486947) passed the exact-source UBSan proof, full package build/tests, installed baseline and patched regressions, package-aware and OSV before/after scans, Trivy reports, consumer checks, and temporary signed APT client verification. This is development verification only; no binaries or production repository metadata were published. `zstd-test-two-byte-tolerance.patch` is a separate test-only compatibility adjustment for the pinned Focal source; it changes no runtime package code and claims no CVE.
 
 ## Sponsorship and licensing
 
@@ -43,5 +40,12 @@ From a clean checkout on a disposable Linux Docker host:
     git clone https://github.com/getpatched/platform.git
     git clone --branch getpatched/focal https://github.com/getpatched/packaging-libarchive.git
     python3 platform/scripts/build-package.py --source packaging-libarchive --target ubuntu-focal-amd64 --output build/libarchive
+
+For the Debian Trixie candidate, use its target branch and exact target ID:
+
+    git clone --branch getpatched/debian-trixie https://github.com/getpatched/packaging-libarchive.git packaging-libarchive-trixie
+    python3 platform/scripts/build-package.py --source packaging-libarchive-trixie --target debian-trixie-amd64 --output build/libarchive-trixie
+
+The Trixie command is documented for reproducibility. Hosted run [41756486947](https://github.com/getpatched/platform/actions/runs/41756486947) verified both installed phases and the temporary signed APT client flow. Production release remains disabled.
 
 The builder consumes the target's pinned inputs, runs baseline and patched installed-package checks, retains scan evidence, and tests signed APT installation of the binary and source packages. It does not publish binaries. Ubuntu Pro/ESM compatibility is not tested or claimed.
