@@ -15,7 +15,7 @@
     "publishedAt": "2026-04-24T04:36:34Z",
     "descriptor": {
       "name": "libarchive_3.7.4-4+deb13u1.dsc",
-      "url": "https://snapshot.debian.org/archive/debian/20261030T000000Z/pool/main/liba/libarchive/libarchive_3.7.4-4+deb13u1.dsc",
+      "url": "https://deb.debian.org/debian/pool/main/liba/libarchive/libarchive_3.7.4-4+deb13u1.dsc",
       "sha256": "0579aa62c9b547a520fd3af48382b1b071c75dde75643c5063fc5f5dcb80545b",
       "bytes": 2634
     },
@@ -23,21 +23,21 @@
       {
         "name": "libarchive_3.7.4.orig.tar.xz",
         "role": "upstream-source",
-        "url": "https://snapshot.debian.org/archive/debian/20261030T000000Z/pool/main/liba/libarchive/libarchive_3.7.4.orig.tar.xz",
+        "url": "https://deb.debian.org/debian/pool/main/liba/libarchive/libarchive_3.7.4.orig.tar.xz",
         "sha256": "f887755c434a736a609cbd28d87ddbfbe9d6a3bb5b703c22c02f6af80a802735",
         "bytes": 5417660
       },
       {
         "name": "libarchive_3.7.4.orig.tar.xz.asc",
         "role": "upstream-detached-signature",
-        "url": "https://snapshot.debian.org/archive/debian/20261030T000000Z/pool/main/liba/libarchive/libarchive_3.7.4.orig.tar.xz.asc",
+        "url": "https://deb.debian.org/debian/pool/main/liba/libarchive/libarchive_3.7.4.orig.tar.xz.asc",
         "sha256": "400b72233b64fae8d93a180f7330d0015a48fe93cdfb56329190b4d1a099d816",
         "bytes": 659
       },
       {
         "name": "libarchive_3.7.4-4+deb13u1.debian.tar.xz",
         "role": "debian-packaging",
-        "url": "https://snapshot.debian.org/archive/debian/20261030T000000Z/pool/main/liba/libarchive/libarchive_3.7.4-4+deb13u1.debian.tar.xz",
+        "url": "https://deb.debian.org/debian/pool/main/liba/libarchive/libarchive_3.7.4-4+deb13u1.debian.tar.xz",
         "sha256": "72da9703b642c6c9bc0432704f1ad14919c57f743336396b5f8aefaf9bf79874",
         "bytes": 40084
       }
