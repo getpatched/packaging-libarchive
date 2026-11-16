@@ -16,9 +16,10 @@ permissions:
 jobs:
   package:
     if: github.event_name != 'schedule' && !inputs.drift
-    uses: getpatched/actions/.github/workflows/package-ci.yml@ef3f23009b189a210ecbf2c7f2d6d218abb95adc
+    uses: getpatched/actions/.github/workflows/package-ci.yml@c811fd3f70c662e0a5c425387a1f9688687763a4
     with:
-      tooling_ref: ef3f23009b189a210ecbf2c7f2d6d218abb95adc
+      tooling_ref: c811fd3f70c662e0a5c425387a1f9688687763a4
+      paired_scan: true
   drift:
     if: github.event_name == 'schedule' || inputs.drift
     uses: getpatched/actions/.github/workflows/package-ci.yml@ef3f23009b189a210ecbf2c7f2d6d218abb95adc
