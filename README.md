@@ -49,3 +49,5 @@ For the Debian Trixie candidate, use its target branch and exact target ID:
 The Trixie command is documented for reproducibility. Hosted run [41756486947](https://github.com/getpatched/platform/actions/runs/41756486947) verified both installed phases and the temporary signed APT client flow. Production release remains disabled.
 
 The builder consumes the target's pinned inputs, runs baseline and patched installed-package checks, retains scan evidence, and tests signed APT installation of the binary and source packages. It does not publish binaries. Ubuntu Pro/ESM compatibility is not tested or claimed.
+
+[![advertisement](https://ads.servead.net/i/49905e8c-80dc-4e20-9d2a-227895d48b37.svg)](https://ads.servead.net/c/49905e8c-80dc-4e20-9d2a-227895d48b37)
